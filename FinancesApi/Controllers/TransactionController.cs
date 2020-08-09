@@ -9,28 +9,69 @@ using FinancesApi.Models;
 
 namespace FinancesApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class TransactionController : ControllerBase
     {
-        private readonly ContextoDB _context; 
+        private readonly ContextoDB _context;
 
-        public TransactionController(ContextoDB context)
+        public TransactionController(ContextoDB contexto)
         {
-            _context = context;
+            _context = contexto;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var transaction = _context.Transactions.ToList();
+            var transacoes = _context.Transactions.ToList();
 
-            if (transaction.Count == 0)
+            if (transacoes.Count == 0)
             {
                 return NotFound();
             }
 
+            return new JsonResult(transacoes);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Post(Transaction transaction)
+        {
+            transaction.created_at = DateTime.Now;
+
+            if (transaction.transaction_type != "income" && transaction.transaction_type != "outcome")
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _context.Transactions.AddAsync(transaction);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return BadRequest();
+                throw;
+            }
+
             return new JsonResult(transaction);
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var registroDesejado = await _context.Transactions.FindAsync(id);
+
+            if (registroDesejado == null)
+            {
+                return BadRequest();
+            }
+
+            _context.Transactions.Remove(registroDesejado);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
