@@ -20,6 +20,8 @@ namespace FinancesApi
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseKestrel();
+                    webBuilder.UseUrls("http://192.168.0.14:54464");
                     webBuilder.UseStartup<Startup>();
                 });
     }
