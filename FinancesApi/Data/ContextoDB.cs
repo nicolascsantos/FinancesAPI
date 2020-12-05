@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using FinancesApi.Models;
 
 namespace FinancesApi.Data
 {
-    public class ContextoDB : DbContext
+    public class ContextoDB : IdentityDbContext
     {
         public ContextoDB(DbContextOptions options): base(options)
         {
